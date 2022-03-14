@@ -1,12 +1,15 @@
 import express, {Express, Router} from "express";
-import {guard} from './../middleware/apiGuard'
+import {guard} from '../middleware/auth'
 
 export default function routeRegistry(app: Express) {
 
     const router = Router()
 
-
     router.get('/', (req, res, next) => {
+        res.sendStatus(200)
+    })
+
+    router.get('/health', (req, res, next) => {
         res.status(200).json({
             data: 'I am alive'
         })

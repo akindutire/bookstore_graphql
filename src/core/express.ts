@@ -5,6 +5,7 @@ import cors from 'cors'
 import config from "./config";
 import routeRegistry from './route-registry'
 import serviceRegistry from "./service-registry";
+import Database from "./../service/util/database";
 
 
 export default class ExpreesApp {
@@ -22,12 +23,12 @@ export default class ExpreesApp {
 
         this.initCorsCfg()
         this.registerServices()
-
+        this.connectDB()
         this.registerRoutes()
 
         return this.app.listen( config.server.port, config.server.host, 0, () => {
 
-            console.log(`Now listening on ${config.server.host}@${config.server.port}`);
+            console.log(`Now listening on http://${config.server.host}@${config.server.port}`);
             
         })
     }
@@ -42,6 +43,10 @@ export default class ExpreesApp {
             })
         )
 
+    }
+
+    private connectDB() {
+        Database.connect()
     }
 
     private registerServices() {
