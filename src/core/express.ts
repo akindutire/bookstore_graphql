@@ -6,7 +6,7 @@ import config from "./config";
 import routeRegistry from './route-registry'
 import serviceRegistry from "./service-registry";
 import Database from "./../service/util/database";
-
+import log from './../service/util/logger'
 
 export default class ExpreesApp {
 
@@ -23,12 +23,12 @@ export default class ExpreesApp {
 
         this.initCorsCfg()
         this.registerServices()
-        this.connectDB()
         this.registerRoutes()
 
-        return this.app.listen( config.server.port, config.server.host, 0, () => {
+        this.app.listen( config.server.port, config.server.host, () => {
 
-            console.log(`Now listening on http://${config.server.host}@${config.server.port}`);
+            log.info(`Now listening on http://${config.server.host}@${config.server.port}`);
+            this.connectDB()
             
         })
     }

@@ -9,11 +9,7 @@ export default function routeRegistry(app: Express) {
         res.sendStatus(200)
     })
 
-    router.get('/health', (req, res, next) => {
-        res.status(200).json({
-            data: 'I am alive'
-        })
-    })
+    router.get('/health', (req, res, next) => res.sendStatus(200) )
 
     router.post('/register', (req, res, next) => {
         res.status(200).json({
