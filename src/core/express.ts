@@ -23,6 +23,8 @@ export default class ExpreesApp {
         this.initCorsCfg()
         this.registerServices()
 
+        this.registerRoutes()
+
         return this.app.listen( config.server.port, config.server.host, 0, () => {
 
             console.log(`Now listening on ${config.server.host}@${config.server.port}`);
@@ -51,7 +53,9 @@ export default class ExpreesApp {
     }
 
     private registerRoutes() {
-        routeRegistry(this.app)
+        const router = routeRegistry(this.app)
+
+        this.app.use('/api/', router)
     }
 
 
