@@ -46,7 +46,6 @@ export default class ExpreesApp {
                 maxAge: 3600
             })
         )
-
     }
 
     private connectDB() {
@@ -59,7 +58,6 @@ export default class ExpreesApp {
 
     private registerRoutes() {
         const router = routeRegistry(this.app)
-
         this.app.use('/api/', router)
     }
 
