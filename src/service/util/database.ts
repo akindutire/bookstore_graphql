@@ -9,7 +9,7 @@ export default class DatabaseSvc {
                 log.info("Connected to DB")
             } )
         } catch (e) {
-            throw new Error(e)
+            throw e
         }
     }
 }

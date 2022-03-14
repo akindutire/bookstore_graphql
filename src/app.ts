@@ -1,5 +1,5 @@
-import ExpressApp from './core/express'
+import ExpressApp from './core/kernel'
 
-const app = new ExpressApp()
+const kernel = new ExpressApp()
 
-app.boot();
+kernel.boot();
