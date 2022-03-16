@@ -1,6 +1,5 @@
-import express, {Express} from "express";
+import express, {Express, json} from "express";
 import { asClass, asValue, AwilixContainer, createContainer } from "awilix";
-import { scopePerRequest } from 'awilix-express';
 import cors from 'cors'
 import config from "./config";
 import routeRegistry from './route-registry'
@@ -14,7 +13,8 @@ export default class ExpreesApp {
     private container: AwilixContainer;
 
     constructor() {
-        this.app = express();
+        this.app = express()
+        this.app.use(json())
     }
 
 
@@ -29,7 +29,7 @@ export default class ExpreesApp {
         
         this.app.listen( config.server.port, config.server.host, () => {
 
-            log.info(`Now listening on http://${config.server.host}@${config.server.port}`);
+            log.info(`Now listening on http://${config.server.host}:${config.server.port}`);
 
             this.connectDB()
         
