@@ -4,14 +4,20 @@
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
 # Node artifact files
-node_modules/
-package-lock.json
-dist/
-logs/
-storage/
-snippet/
+server/node_modules/
+server/package-lock.json
+server/logs/
+server/storage/
+server/snippet/
+
+client/node_modules/
+client/package-lock.json
+client/logs/
+client/storage/
+
 # ENV
-.env
+server/.env
+client/.env
 
 # Compiled Java class files
 *.class

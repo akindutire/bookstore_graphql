@@ -1,6 +1,7 @@
 import { connect } from "mongoose";
-import config from './../../core/config'
+import config from '../../core/config'
 import log from './logger'
+import { createConnection } from 'typeorm'
 
 export default class DatabaseSvc {
     public static async connect() {
