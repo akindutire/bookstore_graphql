@@ -4,7 +4,7 @@ import cors from 'cors'
 import config from "./config";
 import routeRegistry from './route-registry'
 import serviceRegistry from "./service-registry";
-import Database from "../service/util/database";
+import Database from "./database";
 import log from '../service/util/logger'
 
 export default class ExpreesApp {
