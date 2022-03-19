@@ -10,7 +10,6 @@ import log from '../service/util/logger'
 export default class ExpreesApp {
 
     private app:Express
-    private container: AwilixContainer;
 
     constructor() {
         this.app = express()
@@ -20,20 +19,24 @@ export default class ExpreesApp {
 
     public boot() {
         
-
-        this.initCorsCfg()
-        this.registerServices()
-        this.registerRoutes()
-
-        this.exceptionHandler()    
-        
-        this.app.listen( config.server.port, config.server.host, () => {
-
-            log.info(`Now listening on http://${config.server.host}:${config.server.port}`);
-
+        try{
+            this.initCorsCfg()
+            this.registerServices()
+            this.registerRoutes()
+            this.exceptionHandler()    
+            
             this.connectDB()
-        
-        })
+            .then( (res) => {
+                this.app.listen( config.server.port, config.server.host, () => {
+                    log.info(`Now listening on http://${config.server.host}:${config.server.port}`);
+                })
+            } )
+            .catch(e => log.error(e)) 
+
+
+        } catch(e:any) {
+            log.error(`App not started: ${e.message}`)
+        }
 
     }
 
@@ -46,14 +49,14 @@ export default class ExpreesApp {
                 maxAge: 3600
             })
         )
-    }
+    } 
 
-    private connectDB() {
-        Database.connect()
+    private async connectDB() {
+        return Database.connect()
     }
 
     private registerServices() {
-        serviceRegistry(this.app, this.container)
+        serviceRegistry(this.app)
     }
 
     private registerRoutes() {
