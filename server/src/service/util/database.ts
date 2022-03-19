@@ -6,6 +6,11 @@ import { createConnection } from 'typeorm'
 export default class DatabaseSvc {
     public static async connect() {
         try{
+            const connection = await createConnection({
+                type: "mongodb",
+                url: config.server.uri,
+            })
+            
             connect(config.server.uri).then( (res) => {
                 log.info("Connected to DB")
             } )
