@@ -15,6 +15,7 @@ export default class DatabaseSvc {
                 entities: [
                     User, Book
                 ],
+                // logging: true,
                 synchronize: true
             })
             log.info("Connected to DB")
