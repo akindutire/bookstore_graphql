@@ -1,11 +1,11 @@
 import express, {Express, json} from "express";
-import { asClass, asValue, AwilixContainer, createContainer } from "awilix";
 import cors from 'cors'
 import config from "./config";
 import routeRegistry from './route-registry'
 import serviceRegistry from "./service-registry";
 import Database from "./database";
 import log from '../service/util/logger'
+import GraphqlInit from "../graphql/init";
 
 export default class ExpreesApp {
 
@@ -20,19 +20,36 @@ export default class ExpreesApp {
     public boot() {
         
         try{
+            
             this.initCorsCfg()
             this.registerServices()
             this.registerRoutes()
             this.exceptionHandler()    
-            
-            this.connectDB()
-            .then( (res) => {
-                this.app.listen( config.server.port, config.server.host, () => {
-                    log.info(`Now listening on http://${config.server.host}:${config.server.port}`);
-                })
-            } )
-            .catch(e => log.error(e)) 
 
+            const graphqlInit = new GraphqlInit()
+            graphqlInit.init()
+                .then( async (apolloSrv) => {
+
+                    await apolloSrv.start()
+                    
+                    let app = this.app;
+                    apolloSrv.applyMiddleware({app})
+                    
+                    this.connectDB()
+                        .then( (res) => {
+
+                            this.app.listen( config.server.port, config.server.host, () => {
+                                log.info(`Now listening on http://${config.server.host}:${config.server.port}`);
+                            })
+                            
+                        } )
+                        .catch(e => log.error(e)) 
+                } )
+                .catch(
+                     (e) => { throw e }
+                 ) 
+
+            
 
         } catch(e:any) {
             log.error(`App not started: ${e.message}`)
