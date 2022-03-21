@@ -13,10 +13,7 @@ class GraphqlInit {
                 validate: false
             }),
             plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
-            context: ({req, res}) => {
-                const user = req.user || null
-                return {user}
-            }
+            context: ({req, res}) => ({req, res})
         })
         return apolloServer
     }
