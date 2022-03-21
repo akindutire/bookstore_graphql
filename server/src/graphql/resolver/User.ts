@@ -1,7 +1,11 @@
 import { Arg, Field, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
 import { compare, hash } from 'bcrypt'
-import User from "../../entity/User";
 import { createQueryBuilder } from "typeorm";
+import { sign } from 'jsonwebtoken'
+
+import config from './../../core/config'
+import User from "../../entity/User";
+
 
 @ObjectType()
 class LoginResp {
@@ -63,7 +67,9 @@ export default class UserRes {
             throw new Error("Login failed! User credentials incorrect")
         }
         
-        const token : LoginResp = { token: '' }
+        let secret = config.jwt.secret || ''
+        
+        const token : LoginResp = { token: sign({ email: user.email }, secret, {expiresIn: "5min"} ) }
         return token
 
 
