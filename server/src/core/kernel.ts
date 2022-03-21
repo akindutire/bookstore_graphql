@@ -2,7 +2,6 @@ import express, {Express, json} from "express";
 import cors from 'cors'
 import config from "./config";
 import routeRegistry from './route-registry'
-import serviceRegistry from "./service-registry";
 import Database from "./database";
 import log from '../service/util/logger'
 import GraphqlInit from "../graphql/init";
@@ -22,7 +21,6 @@ export default class ExpreesApp {
         try{
             
             this.initCorsCfg()
-            this.registerServices()
             this.registerRoutes()
             this.exceptionHandler()    
 
@@ -70,10 +68,6 @@ export default class ExpreesApp {
 
     private async connectDB() {
         return Database.connect()
-    }
-
-    private registerServices() {
-        serviceRegistry(this.app)
     }
 
     private registerRoutes() {

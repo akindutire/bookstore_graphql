@@ -1,4 +1,5 @@
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
+import { } from 'awilix'
 import { compare, hash } from 'bcrypt'
 import { createQueryBuilder } from "typeorm";
 import { sign } from 'jsonwebtoken'
@@ -6,7 +7,8 @@ import { sign } from 'jsonwebtoken'
 import config from './../../core/config'
 import User from "../../entity/User";
 import ContextInf from "../Context";
-
+import JwtSvc from "../../service/util/JwtSvc";
+import container  from './../../core/service-registry'
 
 @ObjectType()
 class LoginResp {
@@ -35,6 +37,12 @@ class RegistrationInputType {
 
 @Resolver()
 export default class UserRes {
+
+    private jwt: JwtSvc
+
+    constructor() {
+        this.jwt = container.resolve('jwt')
+    }
 
     @Mutation( () => User)
     async register(
@@ -69,10 +77,17 @@ export default class UserRes {
             throw new Error("Login failed! User credentials incorrect")
         }
         
-        let secret = config.jwt.secret || ''
         
+        res.cookie(
+            config.server.cookiePrefix+'refreshID', 
+            this.jwt.createRefreshToken({ email: user.email }),
+            {
+                httpOnly: true
+            }
+        )
 
-        const token : LoginResp = { token: sign({ email: user.email }, secret, {expiresIn: "5min"} ) }
+        
+        const token : LoginResp = { token: this.jwt.createAccessToken({ email: user.email }) }
         return token
 
 
