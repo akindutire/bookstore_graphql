@@ -38,7 +38,7 @@ export default class ExpreesApp {
                     this.connectDB()
                         .then( (res) => {
 
-                            this.app.listen( config.server.port, config.server.host, () => {
+                            this.app.listen( parseInt(config.server.port!), config.server.host!, () => {
                                 log.info(`Now listening on http://${config.server.host}:${config.server.port}`);
                             })
                             
