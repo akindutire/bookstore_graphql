@@ -1,9 +1,10 @@
 import { Arg, Field, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
-import { hash } from 'bcrypt'
+import { compare, hash } from 'bcrypt'
 import User from "../../entity/User";
+import { createQueryBuilder } from "typeorm";
 
 @ObjectType()
-class LoginType {
+class LoginResp {
 
     @Field( () => String )
     token: string | null = null
@@ -37,19 +38,34 @@ export default class UserRes {
     {
 
         if(input.pwd != input.confirm_pwd) {
-            return null
+            throw new Error("Password and Confirm password doesn't match")
         }
 
-        const password = await hash(input.pwd, 4)
+        const password = await hash(input.pwd, 12)
         return await User.create({email: input.email, pwd: password, name: input.name}).save()
 
     }
 
-    @Mutation( () => LoginType)
-    login(
-        @Arg("email", () => String )  email: string
+    @Mutation( () => LoginResp)
+    async login(
+        @Arg("email", () => String )  email: string,
+        @Arg("password", () => String )  password: string
     )
     {
+
+        const user = await createQueryBuilder('users').from(User, 'u').select('u.email, u.pwd').where('u.email=:em', {em: email}).getOne()
+        if(!user) {
+            throw new Error("User credentials incorrect")
+        }
+
+        const pwdVerified: boolean = await compare(password, user.pwd)
+        if(!pwdVerified) {
+            throw new Error("Login failed! User credentials incorrect")
+        }
+        
+        const token : LoginResp = { token: '' }
+        return token
+
 
     }
 

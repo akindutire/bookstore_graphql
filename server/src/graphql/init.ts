@@ -12,7 +12,11 @@ class GraphqlInit {
                 resolvers: [ Book ],
                 validate: false
             }),
-            plugins: [ApolloServerPluginLandingPageGraphQLPlayground]
+            plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
+            context: ({req, res}) => {
+                const user = req.user || null
+                return {user}
+            }
         })
         return apolloServer
     }
