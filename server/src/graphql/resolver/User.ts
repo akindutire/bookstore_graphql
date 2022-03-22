@@ -50,12 +50,17 @@ export default class UserRes {
     )
     {
 
+        const userExist = await User.count({email: input.email})
+        if(userExist) {
+            throw new Error(`Email ${input.email} already exist`)
+        }
+
         if(input.pwd != input.confirm_pwd) {
             throw new Error("Password and Confirm password doesn't match")
         }
 
         const password = await hash(input.pwd, 12)
-        return await User.create({email: input.email, pwd: password, name: input.name}).save()
+        return await User.create({email: input.email, pwd: password, name: input.name, books: []}).save()
 
     }
 

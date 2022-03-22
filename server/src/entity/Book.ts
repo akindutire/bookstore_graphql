@@ -1,12 +1,11 @@
 import { Field, ObjectType } from "type-graphql";
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import BookBaseEntity from "./parent/BookBaseEntity";
-import User from "./User";
 
-@Entity('books')
 @ObjectType()
-export default class Book extends BookBaseEntity {
+export default class Book {
 
+    
     @Column({
         nullable: false,
     })
@@ -15,7 +14,8 @@ export default class Book extends BookBaseEntity {
 
     @Column({
         nullable: false,
-        length: 12
+        length: 12,
+        unique: true
     })
     @Field( () => String )
     isbn: string = ''
@@ -34,15 +34,15 @@ export default class Book extends BookBaseEntity {
     @Field( () => [String] )
     authors: string[] = []
 
-    @ManyToOne(
-        () => User,
-        user => user.books,
-        {
-            onDelete: "CASCADE"
-        }
-    )
-    @JoinColumn({ name: 'user_id' })
-    @Field( () => User )
-    user: User | undefined
+
+    @Column()
+    version: number = 1
+    
+    @CreateDateColumn()
+    created_at: Date = new Date
+
+    @UpdateDateColumn()
+    updated_at: Date = new Date
+
 
 }

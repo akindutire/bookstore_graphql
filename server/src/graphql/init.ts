@@ -1,15 +1,16 @@
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import 'reflect-metadata'
-import Book from "./resolver/Book";
+import BookRes from "./resolver/Book";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
+import UserRes from "./resolver/User";
 
 class GraphqlInit { 
 
     public async init() {
         const apolloServer = new ApolloServer({
             schema: await buildSchema({
-                resolvers: [ Book ],
+                resolvers: [ BookRes, UserRes ],
                 validate: false
             }),
             plugins: [ApolloServerPluginLandingPageGraphQLPlayground],

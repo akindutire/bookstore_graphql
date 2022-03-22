@@ -25,10 +25,6 @@ export default class User extends BookBaseEntity{
     })
     pwd: string = ''
 
-    @OneToMany(
-        () => Book,
-        book => book.user
-    )
-    @Field( () => [Book] )
-    books: Book[] | undefined
+    @Column( type => Book)
+    books!: Book[];
 }
