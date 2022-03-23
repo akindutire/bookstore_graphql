@@ -1,11 +1,9 @@
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
-import { } from 'awilix'
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, registerEnumType, Resolver } from "type-graphql";
 import { compare, hash } from 'bcrypt'
-import { createQueryBuilder } from "typeorm";
-import { sign } from 'jsonwebtoken'
+import { getMongoRepository } from "typeorm";
 
 import config from './../../core/config'
-import User from "../../entity/User";
+import User, { UserRole } from "../../entity/User";
 import ContextInf from "../Context";
 import JwtSvc from "../../service/util/JwtSvc";
 import container  from './../../core/service-registry'
@@ -18,20 +16,25 @@ class LoginResp {
 
 }
 
+registerEnumType(UserRole, {
+    name: "UserRole",
+    description: "enlists various types of user"
+})
+
 @InputType()
 class RegistrationInputType {
 
     @Field( () => String )
-    email: string = ''
+    email!: string 
 
     @Field( () => String )
-    name: string = ''
+    name!: string 
 
     @Field( () => String )
-    pwd: string = ''
+    pwd!: string
 
     @Field( () => String )
-    confirm_pwd: string = ''
+    confirm_pwd!: string
 
 }
 
@@ -60,7 +63,8 @@ export default class UserRes {
         }
 
         const password = await hash(input.pwd, 12)
-        return await User.create({email: input.email, pwd: password, name: input.name, books: []}).save()
+        const u = User.create({email: input.email, pwd: password, name: input.name})
+        return await u.save()
 
     }
 
@@ -72,7 +76,9 @@ export default class UserRes {
     )
     {
 
-        const user = await createQueryBuilder('users').from(User, 'u').select('u.email, u.pwd').where('u.email=:em', {em: email}).getOne()
+        const uRepo = getMongoRepository(User)
+
+        const user = await uRepo.findOne({where: {email}, select: ['pwd', 'email'] })
         if(!user) {
             throw new Error("User credentials incorrect")
         }

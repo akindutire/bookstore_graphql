@@ -1,10 +1,15 @@
 import { Field, ObjectType } from "type-graphql";
-import { Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ObjectID, UpdateDateColumn } from "typeorm";
 import BookBaseEntity from "./parent/BookBaseEntity";
 
 @ObjectType()
-export default class Book {
+@Entity("books")
+export default class Book extends BookBaseEntity {
 
+    @Column({
+        nullable: false
+    })
+    user_id!: ObjectID
     
     @Column({
         nullable: false,
@@ -25,7 +30,10 @@ export default class Book {
         nullable: false,
     })
     @Field( () => String )
-    abstract: string = ''
+    abstract!: string 
+
+    @Field( () => String )
+    context!: string
 
     @Column({
         type: 'simple-array',
@@ -33,16 +41,6 @@ export default class Book {
     })
     @Field( () => [String] )
     authors: string[] = []
-
-
-    @Column()
-    version: number = 1
     
-    @CreateDateColumn()
-    created_at: Date = new Date
-
-    @UpdateDateColumn()
-    updated_at: Date = new Date
-
 
 }
