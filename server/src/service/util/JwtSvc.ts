@@ -1,4 +1,4 @@
-import { sign } from 'jsonwebtoken'
+import { JwtPayload, sign, verify } from 'jsonwebtoken'
 import config from '../../core/config'
 
 export default class JwtSvc{
@@ -15,5 +15,9 @@ export default class JwtSvc{
 
     public createRefreshToken(payload: object) : string {
         return sign(payload, this.secret+'_REFRESH', {expiresIn: "7d"} )
+    }
+
+    public getClaims(token: string) : JwtPayload | string {
+        return verify(token, this.secret)
     }
 }
