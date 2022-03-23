@@ -44,9 +44,22 @@ class UpdateBookInput {
 @Resolver()
 export default class BookRes {
 
-    @Query( () => String )
-    getAll() : string{
-        return 'I worked'
+    @Query( () => [Book] )
+    @UseMiddleware(isAuth)
+    async getAll(
+        @Ctx() { payload }: ContextInf
+    ) : Promise<Book[]> {
+
+        const bookRepo = getMongoRepository(Book)
+        const userRepo = getMongoRepository(User)
+
+        const u = await userRepo.findOne({ where: {email: payload!.email}, select:['id'] })
+        if(!u) {
+            throw new Error("User not found")
+        }
+        const b = await bookRepo.find({ where: {user_id: u.id} })
+
+        return b
     }
 
     @Mutation( () => Book )
@@ -54,7 +67,7 @@ export default class BookRes {
     async createBook(
         @Arg("input", () => CreateBookInput) input: CreateBookInput,
         @Ctx() { payload }: ContextInf
-    ) {
+    ) : Promise<Book> {
 
         const bookRepo = getMongoRepository(Book)
         const userRepo = getMongoRepository(User)
@@ -70,5 +83,29 @@ export default class BookRes {
         book.user_id = u.id
 
         await book.save()
+
+        return book;
+    }
+
+    @Mutation( () => Boolean )
+    @UseMiddleware(isAuth)
+    async updateeBook(
+        @Arg("book_isbn", () => String) book_isbn: string,
+        @Arg("input", () => UpdateBookInput) input: UpdateBookInput,
+        @Ctx() { payload }: ContextInf
+    ) : Promise<boolean> {
+
+        const bookRepo = getMongoRepository(Book)
+        const userRepo = getMongoRepository(User)
+
+        const b = await bookRepo.findOne({ where: {isbn: book_isbn} })
+      
+        if(!b) {
+            throw new Error("Book not found")
+        }
+
+        await bookRepo.updateOne({isbn: book_isbn}, input)
+        
+        return true
     }
 }
