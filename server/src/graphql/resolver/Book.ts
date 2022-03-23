@@ -1,8 +1,9 @@
-import { Arg, Field, InputType, Mutation, ObjectType, Query, Resolver, UseMiddleware } from "type-graphql";
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver, UseMiddleware } from "type-graphql";
 import { getMongoRepository } from "typeorm";
 
 import Book from "../../entity/Book";
 import User from "../../entity/User";
+import ContextInf from "../Context";
 import { isAuth } from "../middleware/isAuth";
 
 
@@ -51,8 +52,8 @@ export default class BookRes {
     @Mutation( () => Book )
     @UseMiddleware(isAuth)
     async createBook(
-        @Arg("user_email", () => String) email: string,
-        @Arg("input", () => CreateBookInput) input: CreateBookInput
+        @Arg("input", () => CreateBookInput) input: CreateBookInput,
+        @Ctx() { payload }: ContextInf
     ) {
 
         const bookRepo = getMongoRepository(Book)
@@ -61,7 +62,7 @@ export default class BookRes {
         const book = bookRepo.create(input)
       
 
-        const u = await userRepo.findOne({ where: {email}, select:['id'] })
+        const u = await userRepo.findOne({ where: {email: payload!.email}, select:['id'] })
         if(!u) {
             throw new Error("User not found")
         }
