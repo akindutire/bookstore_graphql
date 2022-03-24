@@ -1,4 +1,5 @@
 import express, {Express, Router} from "express";
+import User from "../entity/User";
 import {guard} from '../middleware/auth'
 import JwtSvc from "../service/util/JwtSvc";
 import { sendRefreshToken } from "../service/util/sendRefreshToken";
@@ -15,7 +16,7 @@ export default function routeRegistry(app: Express) {
 
     router.get('/health', (req, res, next) => res.sendStatus(200) )
 
-    router.post('/refresh-token', (req, res, next) => {
+    router.post('/refresh-token', async (req, res, next) => {
         let refCk = config.server.cookiePrefix+'refreshID'
         const refToken = req.cookies[refCk]
 
@@ -31,16 +32,25 @@ export default function routeRegistry(app: Express) {
         const jwt: JwtSvc = container.resolve('jwt')
         try {
             payload = jwt.getRefreshClaims(refToken)
-        } catch (e) {
+            
+            const u = await User.findOne({ where: {email: payload.email}, select: ['token_version'] })
+            if(!u) {
+                throw new Error('User bearer not found with associated token')
+            }
+
+            if(payload.token_version !== u.token_version) {
+                throw new Error("Refresh token is invalid")
+            }
+        } catch (e:any) {
             return res.status(200).json({
                 accessTokenRefreshed: false,
                 accessToken: '',
-                message: "Refresh token not valid"
+                message: e.message
             })
         }
 
         //refresh the refresh-token
-        sendRefreshToken(res, payload)
+        sendRefreshToken(res, {email: payload.email, tokenVersion: payload.token_version+1})
 
     
         res.status(200).json({

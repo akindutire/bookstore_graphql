@@ -39,5 +39,10 @@ export default class User extends BookBaseEntity{
     @Field( () => UserRole )
     role!: UserRole
 
+    @Column({
+        nullable: false,
+        default: 0
+    })
+    token_version!: number
 }
 

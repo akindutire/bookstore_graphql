@@ -1,6 +1,6 @@
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, registerEnumType, Resolver } from "type-graphql";
 import { compare, hash } from 'bcrypt'
-import { getMongoRepository } from "typeorm";
+import { getConnection, getMongoRepository } from "typeorm";
 
 import config from './../../core/config'
 import User, { UserRole } from "../../entity/User";
@@ -48,6 +48,17 @@ export default class UserRes {
         this.jwt = container.resolve('jwt')
     }
 
+    @Mutation( () => Boolean)
+    async revokeRefreshTokenForUser(
+        @Arg("user_email", () => String )  email: string
+    ): Promise<boolean>
+    {
+
+        await getConnection().getRepository(User).increment({email: email}, 'token_version', 1)
+
+        return true;
+    }
+
     @Mutation( () => User)
     async register(
         @Arg("input", () => RegistrationInputType || null )  input: RegistrationInputType
@@ -79,7 +90,7 @@ export default class UserRes {
 
         const uRepo = getMongoRepository(User)
 
-        const user = await uRepo.findOne({where: {email}, select: ['pwd', 'email'] })
+        const user = await uRepo.findOne({where: {email}, select: ['pwd', 'email', 'token_version'] })
         if(!user) {
             throw new Error("User credentials incorrect")
         }
@@ -89,7 +100,7 @@ export default class UserRes {
             throw new Error("Login failed! User credentials incorrect")
         }
         
-        sendRefreshToken(res, { email: user.email })
+        sendRefreshToken(res, { email: user.email, tokenVersion: user.token_version+1})
 
         const token : LoginResp = { token: this.jwt.createAccessToken({ email: user.email }) }
         return token
