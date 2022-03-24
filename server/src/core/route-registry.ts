@@ -1,6 +1,7 @@
 import express, {Express, Router} from "express";
 import {guard} from '../middleware/auth'
 import JwtSvc from "../service/util/JwtSvc";
+import { sendRefreshToken } from "../service/util/sendRefreshToken";
 import config from './config'
 import container from "./service-registry";
 
@@ -38,7 +39,10 @@ export default function routeRegistry(app: Express) {
             })
         }
 
+        //refresh the refresh-token
+        sendRefreshToken(res, payload)
 
+    
         res.status(200).json({
             accessTokenRefreshed: true,
             accessToken: jwt.createAccessToken({email: payload.email}),

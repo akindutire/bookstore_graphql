@@ -7,6 +7,7 @@ import User, { UserRole } from "../../entity/User";
 import ContextInf from "../type/Context";
 import JwtSvc from "../../service/util/JwtSvc";
 import container  from './../../core/service-registry'
+import { sendRefreshToken } from "../../service/util/sendRefreshToken";
 
 @ObjectType()
 class LoginResp {
@@ -88,19 +89,10 @@ export default class UserRes {
             throw new Error("Login failed! User credentials incorrect")
         }
         
-        
-        res.cookie(
-            config.server.cookiePrefix+'refreshID', 
-            this.jwt.createRefreshToken({ email: user.email }),
-            {
-                httpOnly: true
-            }
-        )
+        sendRefreshToken(res, { email: user.email })
 
-        
         const token : LoginResp = { token: this.jwt.createAccessToken({ email: user.email }) }
         return token
-
 
     }
 
