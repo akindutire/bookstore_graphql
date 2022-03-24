@@ -3,7 +3,7 @@ import { getMongoRepository } from "typeorm";
 
 import Book from "../../entity/Book";
 import User from "../../entity/User";
-import ContextInf from "../Context";
+import ContextInf from "../type/Context";
 import { isAuth } from "../middleware/isAuth";
 
 

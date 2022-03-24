@@ -1,5 +1,6 @@
 import { JwtPayload, sign, verify } from 'jsonwebtoken'
 import config from '../../core/config'
+import PayloadInf from '../../graphql/type/Payload'
 
 export default class JwtSvc{
 
@@ -11,11 +12,11 @@ export default class JwtSvc{
         this.refreshSecret = this.secret+'_REFRESH'
     }
 
-    public createAccessToken(payload: object) : string {
+    public createAccessToken(payload: PayloadInf) : string {
         return sign(payload, this.secret, {expiresIn: "5min"} )
     }
 
-    public createRefreshToken(payload: object) : string {
+    public createRefreshToken(payload: PayloadInf) : string {
         return sign(payload, this.refreshSecret, {expiresIn: "7d"} )
     }
 

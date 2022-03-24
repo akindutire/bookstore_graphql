@@ -1,6 +1,7 @@
 import { MiddlewareFn } from "type-graphql";
 import JwtSvc from "../../service/util/JwtSvc";
-import ContextInf from "../Context";
+import ContextInf from "../type/Context";
+import PayloadInf from "../type/Payload";
 import container from './../../core/service-registry'
 import log from './../../service/util/logger'
  
@@ -23,7 +24,7 @@ export const isAuth:MiddlewareFn<ContextInf> = ({context}, next) => {
             throw new Error("Access token seems invalid, login!")
         }
     
-        context.payload = payload as {email:string}
+        context.payload = payload as PayloadInf
     
         return next()
 

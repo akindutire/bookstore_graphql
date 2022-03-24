@@ -4,7 +4,7 @@ import { getMongoRepository } from "typeorm";
 
 import config from './../../core/config'
 import User, { UserRole } from "../../entity/User";
-import ContextInf from "../Context";
+import ContextInf from "../type/Context";
 import JwtSvc from "../../service/util/JwtSvc";
 import container  from './../../core/service-registry'
 
