@@ -1,4 +1,5 @@
 import express, {Express, json} from "express";
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import config from "./config";
 import routeRegistry from './route-registry'
@@ -13,6 +14,7 @@ export default class ExpreesApp {
     constructor() {
         this.app = express()
         this.app.use(json())
+        this.app.use(cookieParser())
     }
 
 

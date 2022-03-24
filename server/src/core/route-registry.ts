@@ -11,13 +11,7 @@ export default function routeRegistry(app: Express) {
 
     router.get('/health', (req, res, next) => res.sendStatus(200) )
 
-    router.post('/register', (req, res, next) => {
-        res.status(200).json({
-            data: 'I am alive'
-        })
-    })
-
-    router.post('/login', (req, res, next) => {
+    router.post('/refresh-token', (req, res, next) => {
         res.status(200).json({
             data: 'I am alive'
         })
