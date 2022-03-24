@@ -89,7 +89,7 @@ export default class BookRes {
 
     @Mutation( () => Boolean )
     @UseMiddleware(isAuth)
-    async updateeBook(
+    async updateBook(
         @Arg("book_isbn", () => String) book_isbn: string,
         @Arg("input", () => UpdateBookInput) input: UpdateBookInput,
         @Ctx() { payload }: ContextInf
@@ -105,6 +105,38 @@ export default class BookRes {
         }
 
         await bookRepo.updateOne({isbn: book_isbn}, input)
+        
+        return true
+    }
+
+    @Mutation( () => Book )
+    @UseMiddleware(isAuth)
+    async getBook(
+        @Arg("book_isbn", () => String) book_isbn: string,
+        @Ctx() { payload }: ContextInf
+    ) : Promise<Book> {
+
+        const bookRepo = getMongoRepository(Book)
+    
+        const b = await bookRepo.findOne({ where: {isbn: book_isbn} })
+      
+        if(!b) {
+            throw new Error("Book not found")
+        }
+        
+        return b
+    }
+
+    @Mutation( () => Boolean )
+    @UseMiddleware(isAuth)
+    async deleteBook(
+        @Arg("book_isbn", () => String) book_isbn: string,
+        @Ctx() { payload }: ContextInf
+    ) : Promise<Boolean> {
+
+        const bookRepo = getMongoRepository(Book)
+    
+        const b = await bookRepo.deleteOne({ where: {isbn: book_isbn} })
         
         return true
     }
