@@ -1,10 +1,10 @@
 import express, {Express, Router} from "express";
 import User from "../entity/User";
-import {guard} from '../middleware/auth'
+import {guard} from './controller/middleware/auth'
 import JwtSvc from "../service/util/JwtSvc";
 import { sendRefreshToken } from "../service/util/sendRefreshToken";
-import config from './config'
-import container from "./service-registry";
+import config from '../core/config'
+import container from "../core/service-registry";
 
 export default function routeRegistry(app: Express) {
 

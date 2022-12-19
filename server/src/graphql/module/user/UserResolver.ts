@@ -2,12 +2,12 @@ import { Arg, Ctx, Field, InputType, Mutation, ObjectType, registerEnumType, Res
 import { compare, hash } from 'bcrypt'
 import { getConnection, getMongoRepository } from "typeorm";
 
-import config from './../../core/config'
-import User, { UserRole } from "../../entity/User";
-import ContextInf from "../type/Context";
-import JwtSvc from "../../service/util/JwtSvc";
-import container  from './../../core/service-registry'
-import { sendRefreshToken } from "../../service/util/sendRefreshToken";
+import config from '../../../core/config'
+import User, { UserRole } from "../../../entity/User";
+import ContextInf from "../../type/Context";
+import JwtSvc from "../../../service/util/JwtSvc";
+import container  from '../../../core/service-registry'
+import { sendRefreshToken } from "../../../service/util/sendRefreshToken";
 
 @ObjectType()
 class LoginResp {

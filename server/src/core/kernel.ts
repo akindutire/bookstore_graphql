@@ -1,20 +1,21 @@
 import express, {Express, json} from "express";
 import cookieParser from 'cookie-parser'
-import cors from 'cors'
-import config from "./config";
-import routeRegistry from './route-registry'
 import Database from "./database";
+import config from "./config";
+
+
 import log from '../service/util/logger'
 import GraphqlInit from "../graphql/init";
+import RestInit from "../rest/init";
 
-export default class ExpreesApp {
+export default class App {
 
-    private app:Express
+    private restApp:Express
 
     constructor() {
-        this.app = express()
-        this.app.use(json())
-        this.app.use(cookieParser())
+        this.restApp = express()
+        this.restApp.use(json())
+        this.restApp.use(cookieParser())
     }
 
 
@@ -22,8 +23,7 @@ export default class ExpreesApp {
         
         try{
             
-            this.initCorsCfg()
-            this.registerRoutes()
+           
             this.exceptionHandler()    
 
             const graphqlInit = new GraphqlInit()
@@ -32,13 +32,14 @@ export default class ExpreesApp {
 
                     await apolloSrv.start()
                     
-                    let app = this.app;
+                    let app = new RestInit().init();
+
                     apolloSrv.applyMiddleware({app})
                     
                     this.connectDB()
                         .then( (res) => {
 
-                            this.app.listen( parseInt(config.server.port!), config.server.host!, () => {
+                            this.restApp.listen( parseInt(config.server.port!), config.server.host!, () => {
                                 log.info(`Now listening on http://${config.server.host}:${config.server.port}`);
                             })
                             
@@ -57,24 +58,9 @@ export default class ExpreesApp {
 
     }
 
-    private initCorsCfg() {
-        const props = { origin: ['127.0.0.1'], method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] }
-        this.app.use(
-            cors({
-                origin: props.origin,
-                methods: props.method,
-                maxAge: 3600
-            })
-        )
-    } 
 
     private async connectDB() {
         return Database.connect()
-    }
-
-    private registerRoutes() {
-        const router = routeRegistry(this.app)
-        this.app.use('/api/', router)
     }
 
     private exceptionHandler() {

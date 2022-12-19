@@ -1,10 +1,10 @@
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver, UseMiddleware } from "type-graphql";
 import { getMongoRepository } from "typeorm";
 
-import Book from "../../entity/Book";
-import User from "../../entity/User";
-import ContextInf from "../type/Context";
-import { isAuth } from "../middleware/isAuth";
+import Book from "../../../entity/Book";
+import User from "../../../entity/User";
+import ContextInf from "../../type/Context";
+import { isAuth } from "../../middleware/isAuth";
 
 
 @InputType()
